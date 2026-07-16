@@ -1,3 +1,53 @@
+import cors from "cors";
+import express from "express";
+import { getDb } from "./db.js";
+
+const app = express();
+const port = process.env.PORT || 4000;
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
+
+app.get("/api/students", async (_req, res, next) => {
+  try {
+    const db = await getDb();
+    const students = await db.all(
+      `SELECT id, roll_number AS rollNumber, name, email, phone, created_at AS createdAt
+       FROM students
+       ORDER BY roll_number`
+    );
+    res.json(students);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/students", async (req, res, next) => {
+  try {
+    const { rollNumber, name, email, phone } = req.body;
+    if (!rollNumber || !name) {
+      return res.status(400).json({ message: "Roll number and name are required." });
+    }
+
+    const db = await getDb();
+    const result = await db.run(
+      `INSERT INTO students (roll_number, name, email, phone)
+       VALUES (?, ?, ?, ?)`,
+      [rollNumber.trim(), name.trim(), email?.trim() || null, phone?.trim() || null]
+    );
+
+    const courses = await db.all("SELECT id FROM courses");
+    for (const course of courses) {
+      await db.run(
+        "INSERT OR IGNORE INTO enrollments (student_id, course_id) VALUES (?, ?)",
+        [result.lastID, course.id]
+      );
+    }
+
     const student = await db.get(
       `SELECT id, roll_number AS rollNumber, name, email, phone, created_at AS createdAt
        FROM students

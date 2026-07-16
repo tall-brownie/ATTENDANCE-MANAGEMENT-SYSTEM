@@ -98,3 +98,221 @@ select {
 .stats-grid {
   display: grid;
   gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.metric {
+  background: #e4ece9;
+  border: 1px solid #c7d7d2;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.metric strong {
+  display: block;
+  font-size: 28px;
+}
+
+.metric span,
+.summary-row span,
+.student-cell span,
+.panel-heading span,
+.eyebrow {
+  color: #66788a;
+  font-size: 13px;
+}
+
+.student-form {
+  display: grid;
+  gap: 12px;
+}
+
+.student-form h2 {
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 28px;
+}
+
+.toolbar {
+  align-items: end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.toolbar h2 {
+  font-size: 26px;
+  margin-top: 4px;
+}
+
+.eyebrow {
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.controls {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(240px, 1fr) 160px 42px auto;
+  max-width: 720px;
+  width: 100%;
+}
+
+.icon-button {
+  padding: 0;
+  width: 42px;
+}
+
+.notice {
+  background: #fff7dc;
+  border: 1px solid #e4c866;
+  border-radius: 8px;
+  color: #725b00;
+  padding: 12px 14px;
+}
+
+.content-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #dbe3eb;
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.panel-heading {
+  align-items: center;
+  border-bottom: 1px solid #e4ebf2;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px;
+}
+
+.record-list,
+.summary-list {
+  display: grid;
+}
+
+.record-row {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(160px, 0.9fr) minmax(330px, 1.4fr) minmax(160px, 0.8fr);
+  padding: 14px 18px;
+}
+
+.record-row + .record-row,
+.summary-row + .summary-row {
+  border-top: 1px solid #eef2f6;
+}
+
+.student-cell,
+.summary-row > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.status-options {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(72px, 1fr));
+}
+
+.status-options label {
+  align-items: center;
+  border: 1px solid #cbd5df;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 36px;
+  text-transform: capitalize;
+}
+
+.status-options label.active {
+  background: #dceee9;
+  border-color: #256f63;
+  color: #175149;
+}
+
+.status-options input {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.notes-input {
+  min-height: 36px;
+}
+
+.summary-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 18px;
+}
+
+.rate {
+  text-align: right;
+}
+
+.rate b {
+  display: block;
+  font-size: 22px;
+}
+
+.empty {
+  color: #66788a;
+  margin: 0;
+  padding: 24px;
+}
+
+@media (max-width: 1040px) {
+  .app-shell,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-bottom: 1px solid #d8e0e8;
+    border-right: 0;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 720px) {
+  .sidebar,
+  .workspace {
+    padding: 18px;
+  }
+
+  .controls,
+  .record-row,
+  .status-options {
+    grid-template-columns: 1fr;
+  }
+
+  .icon-button {
+    width: 100%;
+  }
+}

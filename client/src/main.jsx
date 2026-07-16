@@ -1,3 +1,103 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { CalendarCheck, Plus, RefreshCw, Save, Users } from "lucide-react";
+import "./styles.css";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const statuses = ["present", "absent", "late", "excused"];
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function api(path, options) {
+  const response = await fetch(`${API_URL}${path}`, {
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || "Request failed");
+  }
+  return data;
+}
+
+function App() {
+  const [courses, setCourses] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [records, setRecords] = useState([]);
+  const [summary, setSummary] = useState([]);
+  const [courseId, setCourseId] = useState("");
+  const [date, setDate] = useState(today());
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [studentForm, setStudentForm] = useState({
+    rollNumber: "",
+    name: "",
+    email: "",
+    phone: ""
+  });
+
+  const selectedCourse = useMemo(
+    () => courses.find((course) => course.id === Number(courseId)),
+    [courses, courseId]
+  );
+
+  async function loadBaseData() {
+    setLoading(true);
+    try {
+      const [courseData, studentData] = await Promise.all([
+        api("/api/courses"),
+        api("/api/students")
+      ]);
+      setCourses(courseData);
+      setStudents(studentData);
+      setCourseId((current) => current || String(courseData[0]?.id || ""));
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadAttendance(activeCourseId = courseId) {
+    if (!activeCourseId || !date) {
+      return;
+    }
+
+    try {
+      const [attendanceData, summaryData] = await Promise.all([
+        api(`/api/attendance?courseId=${activeCourseId}&date=${date}`),
+        api(`/api/summary?courseId=${activeCourseId}`)
+      ]);
+      setRecords(attendanceData);
+      setSummary(summaryData);
+      setMessage("");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  useEffect(() => {
+    loadBaseData();
+  }, []);
+
+  useEffect(() => {
+    loadAttendance();
+  }, [courseId, date]);
+
+  function updateRecord(studentId, field, value) {
+    setRecords((current) =>
+      current.map((record) =>
+        record.studentId === studentId ? { ...record, [field]: value } : record
+      )
+    );
+  }
+
+  async function saveAttendance() {
+    try {
+      await api("/api/attendance/mark", {
         method: "POST",
         body: JSON.stringify({
           courseId: Number(courseId),
